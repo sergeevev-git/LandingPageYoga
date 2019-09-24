@@ -41,16 +41,21 @@ window.addEventListener('DOMContentLoaded', function() {
 
 //TIMER
 
-    let deadline = '2019-10-30';
+    let deadline = '2019-09-22';
 
     function getTimeRemaining(endtime) {
         let t = Date.parse(endtime) - Date.parse(new Date()), //deadline minus cuurent time
         //let t = Date.parse(endtime) - Date.parse(new Date()) - (5*3600*1000), //поправка на часовой пояс +5
-            seconds = Math.floor((t/1000) % 60),
-            minutes = Math.floor((t/1000/60) % 60),
-            hours = Math.floor(t/(1000*60*60) % 24),
-            days = Math.floor(t/(1000*60*60*24));
-   
+            seconds = '0',
+            minutes = '0',
+            hours = '0',
+            days = '0';
+        if (t > 0 ) {
+            seconds = String(Math.floor((t/1000) % 60)),
+            minutes = String(Math.floor((t/1000/60) % 60)),
+            hours = String(Math.floor(t/(1000*60*60) % 24)),
+            days = String(Math.floor(t/(1000*60*60*24)));
+        }
         return {
             'total' : t,
             'days': days,
@@ -70,11 +75,30 @@ window.addEventListener('DOMContentLoaded', function() {
 
         function updateClock() {
             let t = getTimeRemaining(endtime);
-            days.textContent = t.days;
-            hours.textContent = t.hours;
-            minutes.textContent = t.minutes;
-            seconds.textContent = t.seconds;
+            if (t.days.length < 2) {
+                days.textContent = '0' + t.days;
+            } else {
+                days.textContent = t.days;
+            }                
+        
+            if (t.hours.length < 2) {
+                hours.textContent = '0' + t.hours;
+            } else {
+                hours.textContent = t.hours;
+            }
 
+            if (t.minutes.length < 2) {
+                minutes.textContent = '0' + t.minutes;
+            } else {
+                minutes.textContent = t.minutes;
+            }
+
+            if (t.seconds.length < 2) {
+                seconds.textContent = '0' + t.seconds;
+            } else {
+                seconds.textContent = t.seconds;
+            }
+            
             if (t.total <=0) {
                 clearInterval(timeInterval);
             }

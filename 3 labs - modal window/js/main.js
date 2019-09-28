@@ -114,6 +114,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // 2st option - через делегирование событий с родителем class-info, но при обработчике табов у нас уже такой метод используется
     
+    
         more.addEventListener('click', function () {
         overlay.style.display = 'block';
         this.classList.add('more-splash');

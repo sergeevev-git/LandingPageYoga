@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', function() {
             tabContent[i].classList.add('hide');
 
         }
-    }
+    };
 
     hideTabContent(1);
 
@@ -24,7 +24,7 @@ window.addEventListener('DOMContentLoaded', function() {
             tabContent[b].classList.remove('hide');
             tabContent[b].classList.add('show');
         }
-    }
+    };
 
     info.addEventListener('click', function(event) {
         let target = event.target;

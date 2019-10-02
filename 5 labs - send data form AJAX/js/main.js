@@ -148,7 +148,8 @@ window.addEventListener('DOMContentLoaded', function() {
         mainForm.appendChild(statusMessage);
 
         let request = new XMLHttpRequest();
-        request.open('POST','server.php');
+        request.open('POST','cgi/print.py');
+        
         //передача в "обычном" формате
         //request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -156,6 +157,7 @@ window.addEventListener('DOMContentLoaded', function() {
         request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
 
         let formData = new FormData(mainForm);
+        
         //для передачи данных формы в JSON файл необходимо сначала поместить эти данные в некий объект
         //ниже мы создаем этот объект и заполняем его нашими данными из формы
         let obj = {};
@@ -175,6 +177,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 statusMessage.innerHTML = message.loading;
             } else if (request.readyState === 4 && request.status == 200) {
                 statusMessage.innerHTML = message.success;
+                // console.log(request.responseText);
+                //statusMessage.innerHTML = request.responseText;
             } else { 
                statusMessage.innerHTML = message.failure;
             }

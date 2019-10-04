@@ -679,9 +679,12 @@ header ul li:before {
   color: #fff;
   text-align: center;
 }
-.overlay .status {
+.status {
   font-size: 18px;
   text-align: center;
+  color: #fff;
+  padding-top: 5px;
+  text-align: left;
 }
 .overlay .popup-form__input::-webkit-input-placeholder {
   color: #fff;

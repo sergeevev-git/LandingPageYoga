@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', function() {
             'minutes': minutes,
             'seconds': seconds
         };
-    }
+    };
 
     let setClock = (id, endtime) => {
         let timer = document.getElementById(id),
@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 if (time <= 9) {
                     return '0' + time;
                 } else return time;
-            }
+            };
 
             days.textContent = addZero(t.days);
             hours.textContent = addZero(t.hours);
@@ -89,7 +89,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 seconds.textContent = '00';
             }
         }
-    }
+    };
 
     setClock('timer', deadline);
 
@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function() {
         overlay.style.display = 'block';
         a.classList.add('more-splash'); //анимация нажатой кнопки
         document.body.style.overflow = 'hidden'; //отключения скроллинга страницы
-    }
+    };
 
     tabBtn.forEach(function(item, i) {
         item.addEventListener('click', function() {
@@ -124,10 +124,76 @@ window.addEventListener('DOMContentLoaded', function() {
         overlay.style.display = 'none';
         more.classList.remove('more-splash');
         document.body.style.overflow = '';
+        statusMessage.innerHTML = '';
     });
+
+
+// FORM lab 5
+
+    let message = {
+        loading: 'Загрузка',
+        success: 'Спасибо! Скоро мы c вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    let //mainForm = document.querySelector('.main-form'),
+        form = document.querySelectorAll('form'),
+        //input = mainForm.getElementsByTagName('input'),
+        statusMessage = document.createElement('div');
+
+        statusMessage.classList.add('status');
+        
+    form.forEach(function(item, i) {
+        item.addEventListener('submit', function(event) {
+            event.preventDefault();
+            form[i].appendChild(statusMessage);
+
+            let request = new XMLHttpRequest();
+            request.open('POST','server.php');
+            
+            //передача в "обычном" формате
+            //request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            //передача в формате JSON
+            request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+            console.log(form[i]);
+            let formData = new FormData(form[i]);
+            console.log(formData);
+            
+            //для передачи данных формы в JSON файл необходимо сначала поместить эти данные в некий объект
+            //ниже мы создаем этот объект и заполняем его нашими данными из формы
+            let obj = {};
+            formData.forEach(function(value, key) {
+                obj[key] = value;
+            });
+            console.log(obj);
+            let json = JSON.stringify(obj);
+
+            //сделали  объект и отправляем его вместо formData
+            request.send(json);
+            //request.send(formData);
+
+
+            request.addEventListener('readystatechange', function() {
+                if (request.readyState < 4) {
+                    statusMessage.innerHTML = message.loading;
+                } else if (request.readyState === 4 && request.status == 200) {
+                    statusMessage.innerHTML = message.success;
+                    //console.log(request.responseText);
+                    //statusMessage.innerHTML = request.responseText; //ответ от сервера
+                } else { 
+                statusMessage.innerHTML = message.failure;
+                }
+            });
+
+            let input = form[i].getElementsByTagName('input');
+                for (let i = 0; i < input.length; i++) {
+                    input[i].value = '';
+                }
+        });
+    });
+
 });
-
-
 
 // Второе задание
 
@@ -138,4 +204,6 @@ window.addEventListener('DOMContentLoaded', function() {
 // }
  
 // showUser.apply(age, ["Горький","Максим"]);
+
+
 

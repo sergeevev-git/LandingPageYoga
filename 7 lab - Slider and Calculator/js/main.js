@@ -136,55 +136,89 @@ window.addEventListener('DOMContentLoaded', function() {
         failure: 'Что-то пошло не так...'
     };
 
-    let mainForm = document.querySelector('.main-form'),
-        //contactForm = document.querySelector('.form'),
-        input = mainForm.getElementsByTagName('input'),
+    let //mainForm = document.querySelector('.main-form'), //использовалось только для работы модального окна
+        form = document.querySelectorAll('form'), //стали использовать для работы модального и формы для контактов
+        //input = mainForm.getElementsByTagName('input'), //использовалось только при работе модальнм окном, перенесли в обработчик для из формы
         statusMessage = document.createElement('div');
-
         statusMessage.classList.add('status');
         
-    mainForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        mainForm.appendChild(statusMessage);
-
-        let request = new XMLHttpRequest();
-        request.open('POST','cgi/print.py');
-        
-        //передача в "обычном" формате
-        //request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        //передача в формате JSON
-        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-
-        let formData = new FormData(mainForm);
-        
-        //для передачи данных формы в JSON файл необходимо сначала поместить эти данные в некий объект
-        //ниже мы создаем этот объект и заполняем его нашими данными из формы
-        let obj = {};
-        formData.forEach(function(value, key) {
-            obj[key] = value;
-        });
-        console.log(obj);
-        let json = JSON.stringify(obj);
-
-        //сделали  объект и отправляем его вместо formData
-        request.send(json);
-        //request.send(formData);
-
-        request.addEventListener('readystatechange', function() {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-                // console.log(request.responseText);
-                //statusMessage.innerHTML = request.responseText;
-            } else { 
-               statusMessage.innerHTML = message.failure;
+    form.forEach(function(item, i) {
+        item.addEventListener('submit', function(event) {
+            event.preventDefault();
+            form[i].appendChild(statusMessage);
+            let formData = new FormData(form[i]);
+            
+            function postData(data) {
+                return new Promise(function(resolve, reject) {
+                    let request = new XMLHttpRequest();
+                    request.open('POST','server.php');
+                    //передача в "обычном" формате
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    //передача в формате JSON
+                    //request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+                    
+                    request.onreadystatechange = function() {
+                        if (request.readyState < 4) {
+                            resolve();
+                        } else if (request.readyState === 4) {
+                            if (request.status == 200 && request.status < 300) {
+                                resolve();
+                            }
+                            else {
+                                reject();
+                            }
+                        }
+                    }
+                    request.send(data);
+                })
+            } //end postData
+            
+            function ClearInput(form) {
+                let input = form.getElementsByTagName('input'); //получение значений всех инпутов текущей формы
+                for (let i = 0; i < input.length; i++) {
+                    input[i].value = '';
+                }
             }
+                        
+            /*
+            //для передачи данных формы в JSON файл необходимо сначала поместить эти данные в некий объект
+            //ниже мы создаем этот объект и заполняем его нашими данными из формы
+            let obj = {};
+            formData.forEach(function(value, key) {
+                obj[key] = value;
+            });
+            console.log(obj);
+            let json = JSON.stringify(obj);
+
+            //сделали  объект и отправляем его вместо formData
+            request.send(json);
+            //request.send(formData);
+            */
+
+           postData(formData)
+                .then(() => statusMessage.innerHTML = message.loading)
+                .then(() => {
+                    statusMessage.innerHTML = message.success;
+                })
+                .catch(() => statusMessage.innerHTML = message.failure)
+                .then(ClearInput(form[i]));
+
+            /*
+            request.addEventListener('readystatechange', function() {
+                if (request.readyState < 4) {
+                    statusMessage.innerHTML = message.loading;
+                } else if (request.readyState === 4 && request.status == 200) {
+                    statusMessage.innerHTML = message.success;
+                    console.log(request.responseText);
+                    //statusMessage.innerHTML = request.responseText; //ответ от сервера
+                } else { 
+                statusMessage.innerHTML = message.failure;
+                }
+            });
+            */
+
+            
         });
-            for (let i = 0; i < input.length; i++) {
-                input[i].value = '';
-            }
     });
 
     //SLIDER
